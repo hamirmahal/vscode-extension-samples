@@ -50,7 +50,10 @@ export function activate(context: ExtensionContext) {
 	);
 
 	// Start the client. This will also launch the server
-	client.start();
+	// Add client.start()'s disposable for cleanup after
+	// extension deactivation.
+	const disposable = client.start();
+	context.subscriptions.push(disposable);
 }
 
 export function deactivate(): Thenable<void> | undefined {
