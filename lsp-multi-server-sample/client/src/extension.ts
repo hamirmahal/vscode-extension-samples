@@ -101,7 +101,8 @@ export function activate(context: ExtensionContext) {
 				outputChannel: outputChannel
 			};
 			const client = new LanguageClient('lsp-multi-server-example', 'LSP Multi Server Example', serverOptions, clientOptions);
-			client.start();
+			const disposable = client.start();
+			context.subscriptions.push(disposable);
 			clients.set(folder.uri.toString(), client);
 		}
 	}
