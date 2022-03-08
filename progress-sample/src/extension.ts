@@ -5,38 +5,37 @@
 
 import { ExtensionContext, StatusBarAlignment, window, StatusBarItem, Selection, workspace, TextEditor, commands, ProgressLocation } from 'vscode';
 
+import DOCKER_PULL from './dockerPull';
+
 export function activate(context: ExtensionContext) {
-	context.subscriptions.push(commands.registerCommand('extension.startTask', () => {
 		window.withProgress({
 			location: ProgressLocation.Notification,
 			title: "I am long running!",
 			cancellable: true
-		}, (progress, token) => {
+		}, async (progress, token) => {
 			token.onCancellationRequested(() => {
 				console.log("User canceled the long running operation");
 			});
 
 			progress.report({ increment: 0 });
 
-			setTimeout(() => {
-				progress.report({ increment: 10, message: "I am long running! - still going..." });
-			}, 1000);
+			await DOCKER_PULL();
+			progress.report({ increment: 10, message: "I am long running! - still going..." });
 
-			setTimeout(() => {
-				progress.report({ increment: 40, message: "I am long running! - still going even more..." });
-			}, 2000);
+			await DOCKER_PULL();
+			progress.report({ increment: 40, message: "I am long running! - still going even more..." });
 
-			setTimeout(() => {
-				progress.report({ increment: 50, message: "I am long running! - almost there..." });
-			}, 3000);
+			await DOCKER_PULL();
+			progress.report({ increment: 50, message: "I am long running! - almost there..." });
 
-			const p = new Promise<void>(resolve => {
-				setTimeout(() => {
+			const p = new Promise<void>(async resolve => {
+					console.info('about to docker pull', new Date().toLocaleTimeString());
+					await DOCKER_PULL();
+					console.info('finished docker pull', new Date().toLocaleTimeString());
 					resolve();
-				}, 5000);
+					console.info('finished resolve?', new Date().toLocaleTimeString());
 			});
 
 			return p;
 		});
-	}));
 }
