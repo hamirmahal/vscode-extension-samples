@@ -14,7 +14,9 @@ const PROCESS_HANDLE = (
 };
 
 export default () => new Promise((resolve, reject) => {
-    const process = exec('docker pull debian');
+    const process = exec(
+        'curl https://github.com/microsoft/vscode-extension-samples/tree/main/progress-sample'
+    );
 
     process.on('close', (arg1, arg2) => {
         console.info('close');
