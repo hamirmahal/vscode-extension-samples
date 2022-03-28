@@ -14,9 +14,18 @@ const PROCESS_HANDLE = (
 };
 
 export default () => new Promise((resolve, reject) => {
-    const process = exec(
-        'curl https://github.com/microsoft/vscode-extension-samples/tree/main/progress-sample'
-    );
+    const curlCommand = 'curl https://github.com/' +
+        'microsoft/vscode-extension-samples/tree/' +
+        'main/progress-sample';
+
+    const dockerDownloadCommand = 'docker pull postgres';
+
+    // Change this to your liking.
+    const youWantToTestThisUsingCurl = false;
+
+    const command = youWantToTestThisUsingCurl ?
+        curlCommand : dockerDownloadCommand;
+    const process = exec(command);
 
     process.on('close', (arg1, arg2) => {
         console.info('close');

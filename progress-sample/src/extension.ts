@@ -2,7 +2,6 @@
  * Copyright (C) Microsoft Corporation. All rights reserved.
  *--------------------------------------------------------*/
 
-
 import { ExtensionContext, StatusBarAlignment, window, StatusBarItem, Selection, workspace, TextEditor, commands, ProgressLocation } from 'vscode';
 
 import DOWNLOAD from './download';
@@ -17,16 +16,50 @@ export function activate(context: ExtensionContext) {
 				console.log("User canceled the long running operation");
 			});
 
-			progress.report({ increment: 0 });
+			const USE_FOR_LOOP = false;
 
-			await DOWNLOAD();
-			progress.report({ increment: 10, message: "I am long running! - still going..." });
+			if (USE_FOR_LOOP) {
+				const MAX_NUMBER_OF_REPITITIONS: number = 100;
 
-			await DOWNLOAD();
-			progress.report({ increment: 40, message: "I am long running! - still going even more..." });
+				for (
+					let numberOfRepititions = 1;
+					numberOfRepititions <= MAX_NUMBER_OF_REPITITIONS;
+					numberOfRepititions++
+				) {
+					await DOWNLOAD();
+					const increment = numberOfRepititions;
+					progress.report({
+						increment,
+						message: increment.toString()
+					});
+				}
+			} else {
+				let increment = 0;
+				progress.report({
+					increment,
+					message: increment.toString()
+				});
 
-			await DOWNLOAD();
-			progress.report({ increment: 50, message: "I am long running! - almost there..." });
+				increment = 10;
+				progress.report({
+					increment,
+					message: increment.toString()
+				});
+
+				await DOWNLOAD();
+				increment = 40;
+				progress.report({
+					increment,
+					message: increment.toString()
+				});
+
+				await DOWNLOAD();
+				increment = 50;
+				progress.report({
+					increment,
+					message: increment.toString()
+				});
+			}
 
 			const p = new Promise<void>(async resolve => {
 					console.info('about to download', new Date().toLocaleTimeString());
