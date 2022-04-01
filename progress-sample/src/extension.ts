@@ -9,66 +9,45 @@ import DOWNLOAD from './download';
 export function activate(context: ExtensionContext) {
 		window.withProgress({
 			location: ProgressLocation.Notification,
-			title: "I am long running!",
 			cancellable: true
 		}, async (progress, token) => {
 			token.onCancellationRequested(() => {
 				console.log("User canceled the long running operation");
 			});
 
-			const USE_FOR_LOOP = false;
+			const MAX_NUMBER_OF_REPITITIONS: number = 100;
+			let cumulativeTotal = 0;
 
-			if (USE_FOR_LOOP) {
-				const MAX_NUMBER_OF_REPITITIONS: number = 100;
-
-				for (
-					let numberOfRepititions = 1;
-					numberOfRepititions <= MAX_NUMBER_OF_REPITITIONS;
-					numberOfRepititions++
-				) {
-					await DOWNLOAD();
-					const increment = numberOfRepititions;
-					progress.report({
-						increment,
-						message: increment.toString()
-					});
-				}
-			} else {
-				let increment = 0;
-				progress.report({
-					increment,
-					message: increment.toString()
-				});
-
-				increment = 10;
-				progress.report({
-					increment,
-					message: increment.toString()
-				});
-
+			for (
+				let numberOfRepititions = 0;
+				numberOfRepititions <= MAX_NUMBER_OF_REPITITIONS;
+				numberOfRepititions += 10
+			) {
 				await DOWNLOAD();
-				increment = 40;
-				progress.report({
-					increment,
-					message: increment.toString()
-				});
+				const increment = numberOfRepititions;
+				cumulativeTotal += increment;
 
-				await DOWNLOAD();
-				increment = 50;
 				progress.report({
 					increment,
-					message: increment.toString()
+					message: 'increment: ' +
+						increment.toString() +
+						' Cumulative total: ' +
+						cumulativeTotal.toString()
 				});
 			}
 
-			const p = new Promise<void>(async resolve => {
+			const promise = new Promise<void>(async (resolve) => {
 					console.info('about to download', new Date().toLocaleTimeString());
+
 					await DOWNLOAD();
+
 					console.info('finished download', new Date().toLocaleTimeString());
+
 					resolve();
+
 					console.info('finished resolve?', new Date().toLocaleTimeString());
 			});
 
-			return p;
+			return promise;
 		});
 }
